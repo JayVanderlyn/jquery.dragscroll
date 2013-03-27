@@ -1,86 +1,21 @@
 /*
- *\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
- *\\\\\\\\\\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
- *\\\\\\\\\\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/\/\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
- *\\\\\\\/\/\\/\\\/\/\/\\\\/\/\/\\\\\/\/\/\\\\\/\\\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
- *\\\\\/\\\\\/\\\/\\\\\\\/\\\\\/\\\/\\\\\/\\\\\\/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/\\\/\\\\\\\\
- *\\\\\\/\/\/\\\/\\\\\\\\\/\/\/\\\\\/\/\/\\\\\\\\/\\\\\/\/\/\\\/\/\/\\\\/\/\/\\\\/\\\/\\\\\\\\\
- *\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/\\\\/\\\\\/\\\/\\\\\\\/\\\\\\/\\\\\\/\\\/\\\/\\\\\\\\\\
- *\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\/\\/\\\\\\/\/\/\\\\/\/\/\\\/\\\\\\\/\/\/\\\\\/\\\/\\\\\\\\\\\
- *\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
  *
- * jquery.dragscroll.js
- * a scrolling plugin for the jQuery JavaScript Library
- *
- * Copyright 2011, Thomas Appel, http://thomas-appel.com, mail(at)thomas-appel.com
- * dual licensed under MIT and GPL license
- * http://dev.thomas-appel.com/licenses/mit.txt
- * http://dev.thomas-appel.com/licenses/gpl.txt
+ * A customized solution for dyanmically injecting data into a touch scrollable pane 
+ * Any questions, comments, feedback JayVanderlyn(at)yahoo.com
+ * Dual licensed under MIT and GPL license
  *
  *
+ * based on original work from Thomas Appel, http://thomas-appel.com, mail(at)thomas-appel.com
+ * Dual licensed under MIT and GPL license
  *
- * changelog:
- * --------------------------------------------------------------------------------------------
- * - 0.2.b3:
- * --------------------------------------------------------------------------------------------
- *		- updated example
-*		- code-refectoring
-*		- updated minified version
- * --------------------------------------------------------------------------------------------
- * - 0.2.b3pre:
- * --------------------------------------------------------------------------------------------
- *		- fixed MSIE 6+ issues
- * --------------------------------------------------------------------------------------------
- * - 0.2.b2pre:
- * --------------------------------------------------------------------------------------------
- *		- removed some options: onScrollInit, workOnChildElement, onScrollDirChange
- *		- fixed some problemes
- *		- changed some internal functions
- *		- general refactoring issues
- * --------------------------------------------------------------------------------------------
- * - 0.2.b1pre:
- * --------------------------------------------------------------------------------------------
- *		- completely rewrote this plugin
- *		- added scrollbars
- *		- added mousewheel support
- * --------------------------------------------------------------------------------------------
- * - 0.1.b5b	fixed classname removal on plugin destruction
- * - 0.1.b5a	rewrote almost the whole scrolling mechanism
- * - 0.1.b4:	rewrote event unbinding (teardown,destroy), plugin is now self destroyable
- * - 0.1.b3:	fixed event unbinding (teardown)
- * - 0.1.b2:	fixed touch event support
- * - 0.1.b1:	plugin teardown method added
- * --------------------------------------------------------------------------------------------
- *
- * usage:
- * --------------------------------------------------------------------------------------------
- * - $('selector').dragscroll();
- * - if jquery.event.destroyed.js is available or if you use javascriptMVC,
- *   the plugin will detroy itself automatically
- *
- * - to destroy plugin manually call  $('selector').data('dragscroll').destroy();
- *
- * - see index.html in example directory for a more complex sample setup
- * - visit http://dev.thomas-appel.com/dragscroll for a live demo
- *
- *
- * Features to come:
- * --------------------------------------------------------------------------------------------
- * - pageup pagedown key support
- * known issues:
- * --------------------------------------------------------------------------------------------
- * - MSIE 8 doesn't fade out scrollbar handles
- * --------------------------------------------------------------------------------------------
- * @author Thomas Appel
- * @version 0.2.b3pre
- */
+*/
 
-(function ($, global) {
+(function (jQuery, global) {
 	var doc = global.document,
-	//body = $(doc.body),
-	$global = $(global),
+	//body = jQuery(doc.body),
+	jQueryglobal = jQuery(global),
 
-	sc_listener = $.browser.msie && $.browser.version < 9 ? $('html') : $global;
+	sc_listener = jQuery.browser.msie && jQuery.browser.version < 9 ? jQuery('html') : jQueryglobal;
 
 	function scrollbarDimension(c, b, method) {
 		var a = c[0]['scroll' + method] / b['outer' + method]();
@@ -96,7 +31,7 @@
 		isTouchDevice: global.ontouchstart !== void 0
 	};
 
-	$.extend(DragScroll.prototype, {
+	jQuery.extend(DragScroll.prototype, {
 		events: {
 
 			M_DOWN: DragScroll.prototype.isTouchDevice ? 'touchstart.' + DragScroll.prototype.name: 'mousedown.' + DragScroll.prototype.name,
@@ -121,10 +56,20 @@
 			this.elem.addClass(this.name + '-container');
 			this.innerElem.addClass(this.name + '-inner');
 			this.scrollElem.addClass(this.name + '-scroller');
-			var $div = $(div);
-
-			this.scrollBarContainer = $([$div, $div.clone()]);
-			this.scrollBar = $([$div.clone(), $div.clone()]);
+			var jQuerydiv = jQuery(div);
+			if(this.options.autoWidth){
+				var childClass = '.'+jQuery(this.innerElem).children().attr("class");
+				var childClassContents = jQuery(childClass).contents();
+				var childClassSelector = childClass+' '+this.options.autoWidthContentIdentifier;
+				var innerWidth = 0;
+				jQuery(childClassSelector).each(function() {
+					innerWidth += jQuery(this).outerWidth( true );
+				});
+				jQuery(childClass).css('width', innerWidth)
+				console.log(childClassContents);
+			}
+			this.scrollBarContainer = jQuery([jQuerydiv, jQuerydiv.clone()]);
+			this.scrollBar = jQuery([jQuerydiv.clone(), jQuerydiv.clone()]);
 			this.scrollBarContainer.each(function (i) {
 				var o = i === 0 ? 'h': 'v',
 				ah = that.options.autoFadeBars ? ' autohide': '';
@@ -181,28 +126,32 @@
 			this.scrollBar[1].css({
 				height: this.barIndex.Y[1]
 			});
-
-			this.__tmp__._cdd = {
-				x: this.options.scrollBars ? this.scrollBarContainer[0].innerWidth() : this.scrollElem.innerWidth(),
-				y: this.options.scrollBars ? this.scrollBarContainer[1].innerHeight() : this.scrollElem.innerHeight()
-			};
+			if(this.options.preventVerticalScroll){
+				this.__tmp__._cdd = {
+					x: this.options.scrollBars ? this.scrollBarContainer[0].innerWidth() : this.scrollElem.innerWidth()
+				};
+			}else{
+				this.__tmp__._cdd = {
+					x: this.options.scrollBars ? this.scrollBarContainer[0].innerWidth() : this.scrollElem.innerWidth(),
+					y: this.options.scrollBars ? this.scrollBarContainer[1].innerHeight() : this.scrollElem.innerHeight()
+				};
+			}
 			this.barIndex.X[0] === 1 ? this.scrollBarContainer[0].detach() : this._addBars(0);
 			this.barIndex.Y[0] === 1 ? this.scrollBarContainer[1].detach() : this._addBars(1);
-
 		},
 		_bind: function () {
 			var that = this;
-			sc_listener.bind(this.events.RESIZE, $.proxy(this._buildIndex, this));
-			this.elem.bind('destroyed', $.proxy(this.teardown, this));
-			this.elem.bind(this.name + 'ready', $.proxy(this.onInitReady, this));
-			//this.scrollBarContainer.bind(this.events.M_DOWN,$.proxy(this.scrollStart,this));
-			this.elem.delegate('.' + this.name + '-scrollbar-container', this.events.M_DOWN, $.proxy(this.scrollStart, this));
-			this.elem.bind(this.events.M_WHEEL, $.proxy(this.scrollStart, this));
+			sc_listener.bind(this.events.RESIZE, jQuery.proxy(this._buildIndex, this));
+			this.elem.bind('destroyed', jQuery.proxy(this.teardown, this));
+			this.elem.bind(this.name + 'ready', jQuery.proxy(this.onInitReady, this));
+			//this.scrollBarContainer.bind(this.events.M_DOWN,jQuery.proxy(this.scrollStart,this));
+			this.elem.delegate('.' + this.name + '-scrollbar-container', this.events.M_DOWN, jQuery.proxy(this.scrollStart, this));
+			this.elem.bind(this.events.M_WHEEL, jQuery.proxy(this.scrollStart, this));
 
-			this.scrollElem.bind(this.events.M_DOWN, $.proxy(this.dragScrollStart, this));
+			this.scrollElem.bind(this.events.M_DOWN, jQuery.proxy(this.dragScrollStart, this));
 
 			if (this.options.autoFadeBars) {
-				this.elem.delegate('.' + this.name + '-scrollbar-container', 'mouseenter', $.proxy(this.showBars, this)).delegate('.' + this.name + '-scrollbar-container', 'mouseleave', $.proxy(this.hideBars, this));
+				this.elem.delegate('.' + this.name + '-scrollbar-container', 'mouseenter', jQuery.proxy(this.showBars, this)).delegate('.' + this.name + '-scrollbar-container', 'mouseleave', jQuery.proxy(this.hideBars, this));
 			}
 			this.elem.bind(this.events.S_START, function () {
 				that.options.onScrollStart.call(that.elem.addClass('scrolls'));
@@ -228,9 +177,9 @@
 		},
 		initMouseWheel: function (mode) {
 			if (mode === 'rebind') {
-				this.elem.unbind(this.events.M_WHEEL).bind(this.events.M_WHEEL, $.proxy(this.scrollStart, this));
+				this.elem.unbind(this.events.M_WHEEL).bind(this.events.M_WHEEL, jQuery.proxy(this.scrollStart, this));
 			} else {
-				this.elem.unbind(this.events.M_WHEEL).bind(this.events.M_WHEEL, $.proxy(this._getMousePosition, this));
+				this.elem.unbind(this.events.M_WHEEL).bind(this.events.M_WHEEL, jQuery.proxy(this._getMousePosition, this));
 			}
 		},
 
@@ -394,8 +343,8 @@
 				this.initMouseWheel();
 			} else {
 
-				sc_listener.bind(this.events.M_MOVE, $.proxy(this._getMousePosition, this));
-				sc_listener.bind(this.events.M_UP, $.proxy(this.scrollStop, this));
+				sc_listener.bind(this.events.M_MOVE, jQuery.proxy(this._getMousePosition, this));
+				sc_listener.bind(this.events.M_UP, jQuery.proxy(this.scrollStop, this));
 
 				this.__tmp__._start.x = targetX ? this.mx - this.scrollBar[0].offset().left + this.scrollBarContainer[0].offset().left: targetCX ? Math.round(this.scrollBar[0].outerWidth() / 2) : 0;
 				this.__tmp__._start.y = targetY ? this.my - this.scrollBar[1].offset().top + this.scrollBarContainer[1].offset().top: targetCY ? Math.round(this.scrollBar[1].outerHeight() / 2) : 0;
@@ -477,10 +426,10 @@
 			this.__tmp__._start.y = this.my + this.scrollElem[0].scrollTop;
 
 			// start to record the mouse distance
-			sc_listener.bind(this.events.M_MOVE, $.proxy(this._getMousePosition, this));
-			sc_listener.bind(this.events.M_UP, $.proxy(this._initDragScrollStop, this));
+			sc_listener.bind(this.events.M_MOVE, jQuery.proxy(this._getMousePosition, this));
+			sc_listener.bind(this.events.M_UP, jQuery.proxy(this._initDragScrollStop, this));
 
-			this.scrollElem.bind(this.events.SCROLL, $.proxy(this.setScrollbar, this));
+			this.scrollElem.bind(this.events.SCROLL, jQuery.proxy(this.setScrollbar, this));
 			this.startTimer('dragScrollMove');
 			this.elem.trigger(this.events.S_START);
 		},
@@ -587,25 +536,28 @@
 			while (i--) {
 				this.scrollBarContainer[i].empty().remove();
 			}
-			$.removeData(this.name);
+			jQuery.removeData(this.name);
 		}
 	});
 
-	$.fn.dragscroll = function (options) {
+	jQuery.fn.dragscroll = function(options){
 		var defaults = {
 			scrollClassName: '',
-			scrollBars: true,
-			smoothness: 15,
-			mouseWheelVelocity: 2,
+			scrollBars: false,
+			smoothness: 30,
+			mouseWheelVelocity: 100,
 			autoFadeBars: true,
 			onScrollStart: function () {},
-			onScrollEnd: function () {}
+			onScrollEnd: function () {},
+			preventVerticalScroll: true, // incause you want to make a dyanmic height pane that only scrolls horizontally 
+			autoWidth: true, // set the width so you dont need to declare it. helpful for dynamic server side content 
+			autoWidthContentIdentifier: 'div', //what to measure for autoWidth in the content container
 		},
-		o = $.extend({},
+		o = jQuery.extend({},
 		defaults, options),
 		elem = this;
 		return this.each(function () {
-			$(this).data(DragScroll.prototype.name, new DragScroll(elem, o));
+			jQuery(this).data(DragScroll.prototype.name, new DragScroll(elem, o));
 		});
 	};
 } (this.jQuery, this));
