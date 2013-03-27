@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Drag Scroll - Custom Dynamic Setup</title>
+<style>
+  body{height:100%; background-color:#000}
+  .inner{height:110px;}
+	#container{display:block;width:500px;height:100px;margin:0 auto;  border: 1px solid #fff; overflow:hidden;}
+	.test{margin:0 auto;width:500px;margin-top: 24px;}
+	.scrolls{cursor: move }
+	.dragscroll-scroller{overflow: hidden !important }
+	.dragscroll-container{overflow: visible !important }
+	.dragscroll-container,
+	.dragscroll-scroller{position: relative }
+	.dragscroll-scroller{height: 100% }
+	.dragscroll-inner{display:block }
+	.dragscroll-scrollbar-container{cursor:pointer;position: absolute;background: rgb(220,220,220);background: rgba(0,0,0,.2);-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;}
+	.dragscroll-scrollbar-container.autohide{display: none }
+	.dragscroll-scrollbar-container.h {width:100%;height:4px;left:0;bottom:-8px;}
+	.dragscroll-scrollbar-container.v { height:100%;width:4px;top:0;right:-8px;}
+	.dragscroll-scrollbar.v { width:4px;top:0;}
+	.dragscroll-scrollbar.h { height:4px;left:0;}
+	.dragscroll-scrollbar {position: absolute;cursor:pointer;background: rgb(160,160,160);background: rgba(0,0,0,.4); -webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;}
+</style>
+</head>
+<body>
+<div id="container">
+	<div class="inner">
+        <div style="width:100px; height:100px; background-color:#CCC; float:left; margin:0px 4px 0px 4px">START</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">1</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">2</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">3</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">4</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">5</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">6</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">7</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">8</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">9</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">10</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">11</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">12</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">13</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">14</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">15</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">16</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">17</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">18</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">19</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">20</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">21</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">22</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">23</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">24</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">25</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">26</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">27</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">28</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">29</div>
+        <div style="width:24px; height:100px; background-color:#F00; float:left; margin:0px 4px 0px 4px">30</div>
+        <div style="width:100px; height:100px; background-color:#CCC; float:left; margin:0px 4px 0px 4px">END</div>
+	</div>
+</div>
+<div class="test" id="console"></div>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+<script src="jquery.mousewheel.js"></script>
+<script src="jquery.browser.min.js"></script>
+<script src="jquery.dragscroll.js"></script>
+<script>
+jQuery(document).ready(function(){
+	jQuery('#container').dragscroll({
+		scrollClassName: 'example-1',
+		onScrollStart: function(){
+			console.log('onScrollStart callback');
+		},onScrollEnd:function(){
+			console.log('onScrollEnd callback');
+		}	
+	});
+});
+</script>
+</body>
+</html>
